@@ -1,8 +1,3 @@
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
-library dredger;
-
-export 'src/dredger_base.dart';
-
-// TODO: Export any libraries intended for clients of this package.
+int calculate() {
+  return 6 * 7;
+}
