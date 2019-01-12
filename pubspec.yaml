@@ -7,8 +7,8 @@ description: A ledger-like implemented in Dart language.
 environment:
   sdk: '>=2.1.0 <3.0.0'
 
-#dependencies:
-#  path: ^1.4.1
+dependencies:
+  petitparser:
 
 dev_dependencies:
   test: ^1.0.0

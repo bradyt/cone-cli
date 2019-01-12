@@ -1,74 +1,54 @@
-import 'dart:io';
+import 'package:petitparser/petitparser.dart';
 
-import 'package:path/path.dart' as p;
-import 'package:string_scanner/string_scanner.dart';
-import 'package:yaml/yaml.dart';
+// const String ledgerString = '''
+// 2018-01-01 Opening balance
+//   Assets:Checking  5.00 USD
+//   Equity
+// ''';
 
-import 'package:cone/cone.dart' as cone;
+const String ledgerString =
+    '2018-01-01 ! four score and seven years ago ; a comment';
 
-// class Posting {
-//   String account;
-//   int amount;
-//   String currency;
-// }
-
-// class Transaction {
-//   DateTime dateTime;
-//   String description;
-//   List<Posting> postings;
-//   Transaction(String entity) {
-//     dateTime = DateTime.parse(entity.substring(0, 10));
-//     print(dateTime);
-//   }
-// }
-
-class RawPosting {
-  String account;
-  int amount;
-  String currency;
+class LedgerGrammar extends GrammarParser {
+  LedgerGrammar() : super(const LedgerGrammarDefinition());
 }
 
-class RawTransaction {
-  String dateTime;
-  String description;
-  List<String> postings;
-  RawTransaction(String entity) {
-    StringScanner scanner = StringScanner(entity);
-    scanner.expect(RegExp(r'\d{4}[-/]\d{2}[-/]\d{2}'));
-    this.dateTime = scanner.lastMatch[0];
-    scanner.expect(RegExp(r' *([^\n]*)'));
-    this.description = scanner.lastMatch[1];
-    scanner.scan('\n');
-    scanner.expect(RegExp(r'.*'));
-    this.postings = scanner.lastMatch[0].split('\n');
-    // this.description =
-  }
-  String toString() {
-    return """
+class LedgerGrammarDefinition extends GrammarDefinition {
+  const LedgerGrammarDefinition();
 
-    datetime: $dateTime
-    description: $description
-    postings: $postings""";
-  }
+  Parser start() => ref(journal).end();
+
+  Parser journal() => ref(journalItem).star();
+  Parser journalItem() => ref(transaction);
+
+  Parser transaction() =>
+      ref(date) &
+      ref(secondaryDate).optional() &
+      ref(status).optional() &
+      ref(description).optional() &
+      ref(comment).optional() &
+      ref(postings);
+
+  Parser date() =>
+      ref(int4) & ref(dateSep) & ref(int2) & ref(dateSep) & ref(int2);
+  Parser dateSep() => char('/') | char('-') | char('.');
+  Parser int4() => digit().repeat(4).flatten();
+  Parser int2() => digit().repeat(2).flatten();
+  Parser secondaryDate() => char('=') & ref(date);
+
+  Parser comment() =>
+      (whitespace().star() & char(';') & pattern('^\n').star()).flatten();
+  Parser description() =>
+      (whitespace().star() & pattern('^;\n').star()).flatten().trim();
+  Parser postings() => (char('\n') & ref(posting)).star();
+  Parser posting() => whitespace().plus();
+
+  Parser status() => whitespace().star() & pattern('!*');
 }
 
-main(List<String> arguments) {
-  // String home = Platform.environment['UserProfile'];
-  // File journal = File(p.join(home, '.ledger.journal'));
+final LedgerGrammar ledger = LedgerGrammar();
 
-  // File input = File(p.join(Directory.current.parent.path, 'input', exercise));
-  // return input.readAsStringSync().trim().split('\n');
-
-  File journal =
-      File(p.join(Directory.current.parent.path, 'test', '.ledger.journal'));
-  String contents = journal.readAsStringSync();
-  List<String> entities = contents.split(RegExp(r'\n{2,}'));
-  for (String entity in entities) {
-    if (entity[0] == ';') {
-      print("Comment: " + entity + '\n\n');
-    } else {
-      RawTransaction rawTxn = RawTransaction(entity);
-      print("Transaction: " + rawTxn.toString() + '\n\n');
-    }
-  }
+void main() {
+  var result = ledger.parse(ledgerString);
+  print(result);
 }
