@@ -1,5 +1,9 @@
 ; -*- ledger -*-
 
 2019-01-07  Opening balance
-    Assets:Checking  $5.00
+    Assets:Checking  5.00 USD
     Equity
+
+2019-01-07  Snack
+    Expenses:Food  2.00 USD
+    Assets:Checking

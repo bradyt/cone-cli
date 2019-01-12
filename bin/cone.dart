@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:string_scanner/string_scanner.dart';
+import 'package:yaml/yaml.dart';
 
 import 'package:cone/cone.dart' as cone;
 
@@ -52,8 +53,14 @@ class RawTransaction {
 }
 
 main(List<String> arguments) {
-  String home = Platform.environment['UserProfile'];
-  File journal = File(p.join(home, '.ledger.journal'));
+  // String home = Platform.environment['UserProfile'];
+  // File journal = File(p.join(home, '.ledger.journal'));
+
+  // File input = File(p.join(Directory.current.parent.path, 'input', exercise));
+  // return input.readAsStringSync().trim().split('\n');
+
+  File journal =
+      File(p.join(Directory.current.parent.path, 'test', '.ledger.journal'));
   String contents = journal.readAsStringSync();
   List<String> entities = contents.split(RegExp(r'\n{2,}'));
   for (String entity in entities) {
