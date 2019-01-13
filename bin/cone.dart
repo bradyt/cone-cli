@@ -1,4 +1,5 @@
 import 'package:cone/parser.dart';
+import 'package:petitparser/petitparser.dart';
 // ignore: unused_import
 import 'package:petitparser/debug.dart';
 
@@ -11,20 +12,23 @@ import 'package:petitparser/debug.dart';
 const String ledgerString = '''
 ; My ledger file
 
-2018-01-01 ! four score and seven years ago ; a comment
+2018/01/01 ! four score and seven years ago ; a comment
   assets:accounts receivable  USD 500
   equity
 
-2019-02-03
+2019.02.03
   expenses  300 USD
   assets ; hello world
 ''';
 
-final LedgerGrammar ledger = LedgerGrammar();
+final LedgerParser ledger = LedgerParser();
 
 void main() {
   print(ledgerString);
   // trace(ledger).parse(ledgerString);
-  var result = ledger.parse(ledgerString);
-  print(result);
+  Result journal = ledger.parse(ledgerString);
+  print(journal.value);
+  // for (var journalItem in journal.children) {
+  //   print(journalItem);
+  // }
 }

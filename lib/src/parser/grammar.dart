@@ -1,9 +1,5 @@
 part of cone.parser;
 
-class LedgerGrammar extends GrammarParser {
-  LedgerGrammar() : super(const LedgerGrammarDefinition());
-}
-
 class LedgerGrammarDefinition extends GrammarDefinition {
   const LedgerGrammarDefinition();
 
@@ -12,9 +8,7 @@ class LedgerGrammarDefinition extends GrammarDefinition {
   Parser journal() => ref(journalItem).star();
   Parser journalItem() => ref(journalItemWhitespace) | ref(transaction);
 
-  Parser journalItemWhitespace() =>
-      ref(newline) |
-      (char(';') & (ref(newline).not() & any()).star()) & ref(newline);
+  Parser journalItemWhitespace() => ref(newline) | ref(comment) & ref(newline);
 
   Parser transaction() =>
       ref(date) &
@@ -22,32 +16,47 @@ class LedgerGrammarDefinition extends GrammarDefinition {
       ref(space).star() &
       ref(status).optional() &
       ref(description).optional() &
-      ref(comment).optional() &
+      ref(note).optional() &
       ref(newline) &
       ref(postings);
 
-  Parser date() => digit().repeat(2, 4).separatedBy(anyOf('/-.'));
+  Parser date() =>
+      (ref(int4) & ref(dateSep)).optional() &
+      ref(int2) &
+      ref(dateSep) &
+      ref(int2);
+  Parser int4() => digit().times(4);
+  Parser int2() => digit().times(2);
+  Parser dateSep() => anyOf('/-.');
   Parser secondaryDate() => char('=') & ref(date);
   Parser status() => anyOf('!*');
-  Parser description() => noneOf(';\n').star();
-  Parser comment() => char(';') & noneOf('\n').star();
+  Parser description() => ref(fullstring);
+  Parser note() => ref(comment);
 
   Parser postings() => ref(posting).star();
   Parser posting() =>
-      ref(space).plus() &
-      (ref(status) & ref(space).plus()).optional() &
+      ref(spacePlus) &
+      (ref(status) & ref(spacePlus)).optional() &
       ref(account) &
-      (ref(space).repeat(2, unbounded) & ref(amount)).optional() &
+      (ref(atLeastTwoSpaces) & ref(amount)).optional() &
       ref(note).optional() &
       ref(newline);
 
+  Parser spacePlus() => ref(space).plus();
   Parser account() =>
-      ((ref(space).repeat(2, unbounded) | ref(newline) | char(';')).not() &
-              any())
-          .star();
-  Parser amount() => noneOf(';\n').star();
-  Parser note() => char(';') & noneOf('\n').star();
+      (ref(atLeastTwoSpaces) | ref(newlineOrSemiColon)).neg().star();
+  Parser atLeastTwoSpaces() => ref(space).repeat(2, unbounded);
+  Parser amount() => ref(fullstring);
 
   Parser newline() => Token.newlineParser();
-  Parser space() => newline().not() & whitespace();
+  Parser notNewline() => ref(newline).neg();
+  Parser newlineOrSemiColon() => ref(newline) | char(';');
+  Parser notNewlineOrSemicolon() => ref(newlineOrSemiColon).neg();
+  Parser space() => pattern(' \t');
+  Parser fullstring() => ref(notNewlineOrSemicolon).star();
+  Parser comment() => char(';') & any().starLazy(ref(newline));
+}
+
+class LedgerGrammar extends GrammarParser {
+  LedgerGrammar() : super(const LedgerGrammarDefinition());
 }
