@@ -31,3 +31,10 @@ files primitive, as cuneiform is. Two, the intent in using Dart is to
 try to propel the use of ledger-likes onto mobile devices and GUI apps
 in general. And so, we hope to make ledger-likes more usable on
 tablets, though they might not be clay this time.
+
+# To run
+
+``` sh
+pub global activate --source path .
+cone
+```
