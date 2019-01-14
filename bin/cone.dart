@@ -22,7 +22,7 @@ const String ledgerString = '''
 ''';
 
 // final LedgerParser ledger = LedgerParser();
-final LedgerParser ledger = LedgerGrammar();
+final LedgerGrammar ledger = LedgerGrammar();
 
 void main() {
   // print(ledgerString);
