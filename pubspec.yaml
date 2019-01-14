@@ -1,5 +1,5 @@
-name: dredger
-description: A sample command-line application.
+name: cone
+description: A ledger-like implemented in Dart language.
 # version: 1.0.0
 # homepage: https://www.example.com
 # author: Brady Trainor <email@example.com>
