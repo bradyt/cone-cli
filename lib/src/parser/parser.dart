@@ -1,52 +1,31 @@
 part of cone.parser;
 
-List<JournalItems> journal = [];
-
-class JournalItems {}
-
-List<Transaction> transactions = [];
-
-class Status {}
-
-class Amount {}
-
-class Posting {
-  Status status;
-  String account;
-  Amount amount;
-}
-
-class Transaction {
-  DateTime date;
-  DateTime eDate;
-  Status status;
-  String code;
-  String description;
-  String comment;
-  Set<Posting> postings;
-  String toString() {
-    return '''$date $status $description
-''';
-  }
-}
-
 class LedgerParserDefinition extends LedgerGrammarDefinition {
-  Parser int4() => super.int4().flatten();
-  Parser int2() => super.int2().flatten();
-  Parser date() => super.date().map((it) {
-        List<int> result = [];
-        if (it[0] != null) {
-          result.add(int.parse(it[0][0]));
+  // start() => super.start().map((it) {
+  //       List<Transaction> transactions =
+  //           it.where((it) => it is Transaction).toList();
+  //       return Journal(transactions);
+  //     });
+  Parser transaction() => super.transaction().permute([0, 1, 3, 4, 7]);
+  Parser posting() => super.posting().map((it) {
+        Status status = it[1] != null ? it[1][0] : Status.unmarked;
+        Posting posting;
+        if (it[3] != null) {
+          posting = Posting(status, it[2], it[3]);
+        } else {
+          posting = Posting(status, it[2]);
         }
-        result.add(int.parse(it[1]));
-        result.add(int.parse(it[3]));
-        return result;
+        return posting;
       });
-  // Parser comment() => comment().pick(1);
-  Parser description() => super.description().flatten();
-  Parser account() => super.account().flatten();
-  Parser amount() => super.amount().flatten();
-  // Parser posting() => super.posting().flatten();
+
+  Parser date() => super.date().map((it) => Date(it[0], it[2], it[4]));
+  Parser dateComponent() =>
+      super.dateComponent().flatten().map((it) => int.parse(it));
+  Parser description() => super.description().flatten().map((it) => it.trim());
+  Parser account() => super.account().flatten().map((it) => it.trim());
+  Parser amount() => super.amount().pick(1).flatten().map((it) => it.trim());
+  Parser status() =>
+      super.status().map((it) => (it == '!') ? Status.pending : Status.cleared);
 }
 
 class LedgerParser extends GrammarParser {
