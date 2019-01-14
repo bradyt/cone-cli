@@ -12,8 +12,8 @@ import 'package:petitparser/debug.dart';
 const String ledgerString = '''
 ; My ledger file
 
-2018/01/01 ! four score and seven years ago ; a comment
-  assets:accounts receivable  USD 500
+2018/01/01=2018/02/29 ! four score and seven years ago ; a comment
+  ! assets:accounts receivable  USD 500
   equity
 
 2019.02.03
@@ -27,6 +27,7 @@ void main() {
   print(ledgerString);
   // trace(ledger).parse(ledgerString);
   Result journal = ledger.parse(ledgerString);
+  // print(journal);
   print(journal.value);
   // for (var journalItem in journal.children) {
   //   print(journalItem);
