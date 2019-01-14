@@ -21,14 +21,15 @@ const String ledgerString = '''
   assets ; hello world
 ''';
 
-final LedgerParser ledger = LedgerParser();
+// final LedgerParser ledger = LedgerParser();
+final LedgerParser ledger = LedgerGrammar();
 
 void main() {
-  print(ledgerString);
-  // trace(ledger).parse(ledgerString);
-  Result journal = ledger.parse(ledgerString);
+  // print(ledgerString);
+  trace(ledger).parse(ledgerString);
+  // Result journal = ledger.parse(ledgerString);
   // print(journal);
-  print(journal.value);
+  // print(journal.value);
   // for (var journalItem in journal.children) {
   //   print(journalItem);
   // }

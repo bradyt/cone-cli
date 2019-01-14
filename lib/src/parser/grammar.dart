@@ -32,15 +32,13 @@ class LedgerGrammarDefinition extends GrammarDefinition {
       whitespace().plus() &
       (ref(status) & whitespace().plus()).optional() &
       ref(account) &
-      ref(amount).optional() &
+      (whitespace().repeat(2, unbounded) & ref(amount)).optional() &
       ref(note).optional() &
       ref(newline);
 
   Parser account() => any()
       .starLazy(whitespace().repeat(2, unbounded) | char(';') | ref(newline));
-  Parser amount() =>
-      whitespace().repeat(2, unbounded) &
-      any().starLazy(char(';') | ref(newline));
+  Parser amount() => any().starLazy(char(';') | ref(newline));
 
   Parser whitespace() => pattern(' \t');
   Parser newline() => Token.newlineParser();

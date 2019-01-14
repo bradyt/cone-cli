@@ -22,8 +22,11 @@ class LedgerParserDefinition extends LedgerGrammarDefinition {
   Parser dateComponent() =>
       super.dateComponent().flatten().map((it) => int.parse(it));
   Parser description() => super.description().flatten().map((it) => it.trim());
-  Parser account() => super.account().flatten().map((it) => it.trim());
-  Parser amount() => super.amount().pick(1).flatten().map((it) => it.trim());
+  // Parser account() => super.account().flatten().map((it) {
+  //     print(it);
+  //       it.trim();
+  //     });
+  // Parser amount() => super.amount().pick(1).flatten().map((it) => it.trim());
   Parser status() =>
       super.status().map((it) => (it == '!') ? Status.pending : Status.cleared);
 }
