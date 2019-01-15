@@ -1,25 +1,29 @@
 part of cone.parser;
 
-abstract class AstNode {}
-
-class Journal extends AstNode {
+class Journal {
   List<Transaction> transactions;
   Journal(this.transactions);
 }
 
-abstract class Transaction extends AstNode {
-  List<Posting> postings;
-}
+abstract class Transaction {}
 
 class PlainTransaction extends Transaction {
-  DateTime dateTime;
-  DateTime secondaryDateTime;
+  Date date;
+  Date effectiveDate;
   Status status;
-  String code;
+  // String code;
   String description;
+  List<Posting> postings;
+  PlainTransaction(
+    this.date,
+    this.effectiveDate,
+    this.status,
+    this.description,
+    this.postings,
+  );
 }
 
-class Posting extends AstNode {
+class Posting {
   Status status;
   String account;
   String amount;
@@ -45,7 +49,7 @@ class Posting extends AstNode {
   }
 }
 
-class Amount extends AstNode {
+class Amount {
   String currency;
   num number;
 }

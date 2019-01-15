@@ -9,11 +9,17 @@ import 'package:petitparser/debug.dart';
 //   Equity
 // ''';
 
+// const String ledgerString = '''
+// 2019.02.03
+//   expenses  300 USD
+//   assets ; hello world
+// ''';
+
 const String ledgerString = '''
 ; My ledger file
 
 2018/01/01=2018/02/29 ! four score and seven years ago ; a comment
-  ! assets:accounts receivable  USD 500
+  * assets:accounts receivable  USD 500
   equity
 
 2019.02.03
@@ -21,12 +27,13 @@ const String ledgerString = '''
   assets ; hello world
 ''';
 
-// final LedgerParser ledger = LedgerParser();
-final LedgerGrammar ledger = LedgerGrammar();
+final LedgerParser ledger = LedgerParser();
+// final LedgerGrammar ledger = LedgerGrammar();
 
 void main() {
   // print(ledgerString);
-  trace(ledger).parse(ledgerString);
+  // trace(ledger).parse(ledgerString);
+  print(ledger.parse(ledgerString));
   // Result journal = ledger.parse(ledgerString);
   // print(journal);
   // print(journal.value);
