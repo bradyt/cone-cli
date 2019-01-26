@@ -1,0 +1,22 @@
+
+ArgParser is a grammar, Parser does the parsing
+
+You build the ArgParser grammar by adding options, flags and commands
+
+The grammar has a method parse that takes a list of strings and
+returns an ArgResults map
+
+kay, but what the hell are CommandRunner, Command, runner, run
+
+CommandRunner has access to globalResults
+
+we can addCommand to our top level CommandRunner
+
+its method run, calls parse and then runCommand, which eventually
+calls the Command's run
+
+run must be implemented for each Command subclass
+
+in summary.
+
+we want to extend

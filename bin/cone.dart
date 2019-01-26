@@ -1,43 +1,76 @@
-import 'package:cone/parser.dart';
-import 'package:petitparser/petitparser.dart';
-// ignore: unused_import
-import 'package:petitparser/debug.dart';
+import 'dart:io';
 
-// const String ledgerString = '''
-// 2018-01-01 Opening balance
-//   Assets:Checking  5.00 USD
-//   Equity
-// ''';
+import 'package:args/args.dart';
+import 'package:args/command_runner.dart';
 
-// const String ledgerString = '''
-// 2019.02.03
-//   expenses  300 USD
-//   assets ; hello world
-// ''';
+import 'package:cone/src/version.dart';
 
-const String ledgerString = '''
-; My ledger file
+main(List<String> arguments) {
+  var runner = ConeCommandRunner();
+  runner.run(arguments);
+}
 
-2018/01/01=2018/02/29 ! four score and seven years ago ; a comment
-  * assets:accounts receivable  USD 500
-  equity
+class ConeCommandRunner extends CommandRunner {
+  ConeCommandRunner() : super('cone', 'A ledger-like implemented in Dart') {
+    argParser.addOption(
+      'file',
+      abbr: 'f',
+      help: 'Input file',
+      valueHelp: 'FILE',
+      defaultsTo: '~/.cone.ledger',
+    );
+    argParser.addFlag(
+      'version',
+      abbr: 'v',
+      help: 'Show version',
+      negatable: false,
+    );
+    addCommand(BalanceCommand());
+    addCommand(RegisterCommand());
+    addCommand(TestingCommand());
+  }
+  run(Iterable<String> args) async {
+    ArgResults results = super.parse(args);
+    if (results['version']) {
+      print('cone $packageVersion');
+    } else {
+      super.run(args);
+    }
+  }
+}
 
-2019.02.03
-  expenses  300 USD
-  assets ; hello world
-''';
+class ConeCommand extends Command {
+  String description;
+  String name;
+  ConeCommand() : super() {}
+}
 
-final LedgerParser ledger = LedgerParser();
-// final LedgerGrammar ledger = LedgerGrammar();
+class BalanceCommand extends ConeCommand {
+  final String name = 'balance';
+  final String description = 'Show accounts and balances (bal)';
+  final List<String> aliases = ['bal'];
+  void run() {
+    print('balance is \$0.00');
+  }
+}
 
-void main() {
-  // print(ledgerString);
-  // trace(ledger).parse(ledgerString);
-  print(ledger.parse(ledgerString));
-  // Result journal = ledger.parse(ledgerString);
-  // print(journal);
-  // print(journal.value);
-  // for (var journalItem in journal.children) {
-  //   print(journalItem);
-  // }
+class RegisterCommand extends ConeCommand {
+  final String name = 'register';
+  final String description = 'Show accounts and registers (reg)';
+  final List<String> aliases = ['reg'];
+  void run() {
+    print('You have mail');
+  }
+}
+
+class TestingCommand extends ConeCommand {
+  final String name = 'testing';
+  final String description = 'This command is reserved for debugging purposes';
+  final List<String> aliases = ['test'];
+  void run() {
+    print(this.globalResults['file']);
+    print(this.globalResults.wasParsed('file'));
+    print('Goal: print input filename');
+    print(Platform.environment['CONE_LEDGER_FILE']);
+  }
 }
